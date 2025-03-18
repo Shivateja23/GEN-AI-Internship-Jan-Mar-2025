@@ -1,53 +1,77 @@
 import streamlit as st
-import google.generativeai as ai
+import google.generativeai as genai
+from dotenv import load_dotenv
+import os
 
-from PIL import Image
-# Set your Gemini API key
-ai.configure(api_key="AIzaSyBkODCV5B1C9V8117nG7UnaSbqB4HVjAQ0")  # Replace with your actual key
+# Load the API key from .python_app_env
+load_dotenv(".python_app_env")
+api_key = os.getenv("GOOGLE_API_KEY")  # Fetch the API key
 
-# Initialize Gemini model for code review
-model = ai.GenerativeModel(model_name="models/gemini-pro")  # Or your preferred Gemini model
+# Configure the Gemini API
+genai.configure(api_key=api_key)
 
-# Streamlit app
-st.title("Python Code Reviewer App")
-#st.image("python img.png", width=200, height=150)#
+def review_code(code):
+    """Send the user's Python code to Gemini API for review and fixes."""
 
-img = Image.open("python img.png")  # Open the image using PIL
-new_img = img.resize((200, 150))  # Resize to 200x150 pixels (width, height)
-st.image(new_img)  # Display the resized image
+    try:
+        # Initialize the Gemini model
+        model = genai.GenerativeModel("gemini-1.5-pro")
 
-# Input method selection
-input_method = st.radio("Select Input Method:", ("File Upload", "Paste Code"))
+        # Generate response from Gemini
+        response = model.generate_content(f"""
+        You are a Python code reviewer. Analyze the given code for errors, bugs, and improvements.
+        Provide a list of identified issues, along with explanations and suggestions for fixes.
+        Then, provide the corrected version of the code.
 
-code = ""  # Initialize code variable
-
-if input_method == "File Upload":
-    uploaded_file = st.file_uploader("Upload a Python file", type="py")
-    if uploaded_file is not None:
-        code = uploaded_file.read().decode("utf-8")  # Decode file content
-elif input_method == "Paste Code":
-    code = st.text_area("Paste your Python code here", height=300)
-
-if code:  # Proceed only if code is provided
-    if st.button("Review Code"):
-        # Construct the prompt for code review
-        prompt = f"""
-        Review the following Python code and provide feedback on:
-        - Potential errors and bugs
-        - Code style and best practices
-        - Suggestions for improvements and optimizations
-        - Security vulnerabilities (if applicable)
-        - give the correcet code
-
+        Code:
         ```python
         {code}
         ```
-        """
 
-        # Generate the review using Gemini
-        response = model.generate_content(prompt)
-        review = response.text
+        Output format:
+        Issues:
+        - Issue 1: Explanation and suggested fix.
+        - Issue 2: Explanation and suggested fix.
 
-        # Display the review
-        st.subheader("Code Review")
-        st.write(review)
+        Fixed Code:
+        ```python
+        (Corrected version of the code here)
+        ```
+        """)
+
+        return response.text  # Extract the response text
+    except Exception as e:
+        return f"Error: {str(e)}"
+
+def main():
+    #st.title("Python Code Reviewer Chatbot")
+    st.markdown(
+    '<h1 style="text-align: center;">'
+    '<span style="color: skyblue;">Python Code</span>  '
+    '<span style="color: white;">Reviewer </span>  '
+    '<span style="color: yellow;">Chatbot</span>  '
+    '</h1>',
+    unsafe_allow_html=True
+)
+
+    #st.image("python img.png", width=300)
+    col1, col2, col3 = st.columns([1, 2, 1])  # Create three columns
+    with col2:  # Place the image in the middle column
+      st.image("python img.png", width=300)
+
+
+    st.write("Submit your Python code below, and receive a review with bug fixes!")
+
+    user_code = st.text_area("Enter your Python code here:", height=300)
+
+    if st.button("Review Code"):
+        if user_code.strip():
+            st.write("## Review Results:")
+            feedback = review_code(user_code)
+            st.markdown(feedback)
+        else:
+            st.warning("Please enter some Python code before submitting.")
+
+if __name__ == "__main__":
+    main()
+
