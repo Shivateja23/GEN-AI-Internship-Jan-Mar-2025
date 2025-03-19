@@ -92,7 +92,7 @@ st.markdown(
 )
 
 # Sidebar - About the App
-st.sidebar.title("📌 About this App")
+st.sidebar.title("About this App ❓")
 st.sidebar.info("""
 🚀 **Learn Data Science with AI**
 - Ask any **Data Science** questions
@@ -103,7 +103,7 @@ st.sidebar.info("""
 """)
 
 # Sidebar - Learning Level Selection
-st.sidebar.title("🔧 Settings")
+st.sidebar.title(" Settings")
 user_level = st.sidebar.radio("Select your learning level:", ["Beginner", "Intermediate", "Advanced"], horizontal=True)
 
 # System Message for AI
