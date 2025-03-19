@@ -155,3 +155,4 @@ if st.session_state.memory.chat_memory.messages:
 if st.button("🔄 Reset Chat"):
     st.session_state.memory.clear()
     st.rerun()
+
