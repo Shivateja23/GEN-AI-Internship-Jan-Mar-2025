@@ -1,5 +1,11 @@
-streamlit
-dotenv
-langchain.memory
-langchain_google_genai
-langchain.schema
+streamlit==1.42.0
+python-dotenv==1.0.1
+langchain==0.3.19
+langchain-core==0.3.40
+langchain-google-genai==2.0.6
+langchain-text-splitters==0.3.6
+google-generativeai==0.8.4
+google-auth==2.27.0
+protobuf==5.28.2
+requests==2.32.3
+requests-toolbelt==1.0.0
